@@ -13,3 +13,6 @@ If you are developing a production application, we recommend using TypeScript wi
 
 #Navbar
 making navbar using tailwind and js
+
+#Header 
+adding header section to create something text and more
