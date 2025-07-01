@@ -2,7 +2,7 @@ import React from "react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 const Navbar = () => {
   return (
-    <div>
+    <div className="sticky top-0 z-10">
       <nav className=" flex  w-full bg-[#282828] h-12 border border-[#343541]">
         <nav className="flex w-xs justify-center items-center mr-25 ml-6">
           <nav className=" text-yellow-500 px-4">

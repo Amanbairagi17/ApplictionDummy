@@ -16,3 +16,6 @@ making navbar using tailwind and js
 
 #Header 
 adding header section to create something text and more
+
+#Footer
+add footer secton and card
