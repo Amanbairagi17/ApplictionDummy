@@ -1,7 +1,7 @@
 # Gravtitude : project for aptitute
 # This is for frontend
 
-# 🚀 React Navbar and Header Component with Tailwind CSS
+
 
 This project demonstrates how to build a responsive **Navbar** and a **Hero Header section** using **React** and **Tailwind CSS**. The layout is clean, minimal, and mobile-friendly, making it a great starting point for modern web applications or landing pages.
 
