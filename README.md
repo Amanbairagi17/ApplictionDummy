@@ -34,3 +34,4 @@ my-vite-app/
 ├── tailwind.config.js           # Tailwind config
 ├── vite.config.js               # Vite config
 └── README.md                    # Project documentation
+add header file
