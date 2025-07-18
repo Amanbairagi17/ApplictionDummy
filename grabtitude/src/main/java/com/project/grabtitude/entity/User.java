@@ -1,0 +1,99 @@
+package com.project.grabtitude.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+
+@Entity
+@Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class User implements UserDetails {
+
+    @Id
+    private String userId;
+
+    @Column(unique = true, nullable = false)
+    private String name;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    private int streak = 0;
+
+    private int xp = 0;
+
+    private LocalDate lastActiveDate;
+
+    private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;      //setting default role as USER
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public enum Role {
+        ADMIN, USER
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        //this will convert only the assigned role into simpleGrantedAuthority
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    private boolean enabled = true;
+
+    private boolean accountNonExpired = true;
+
+    private boolean accountNonLocked = true;
+
+    private boolean credentialsNonExpired = true;
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return this.credentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled(){
+        return this.enabled;
+    }
+
+    @Override
+    public boolean isAccountNonExpired(){
+        return this.accountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked(){
+        return this.accountNonLocked;
+    }
+}
+
