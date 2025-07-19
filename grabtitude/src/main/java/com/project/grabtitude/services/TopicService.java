@@ -2,6 +2,7 @@ package com.project.grabtitude.services;
 
 
 import com.project.grabtitude.entity.Topic;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +12,7 @@ public interface TopicService {
 
     Topic getById(Long id);
 
-    List<Topic> getAll();
+    Page<Topic> getAll(int page, int size);
 
     Topic updateTopic(Topic topic);
 

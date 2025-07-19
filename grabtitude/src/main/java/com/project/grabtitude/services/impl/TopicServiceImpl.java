@@ -4,10 +4,12 @@ import com.project.grabtitude.entity.Topic;
 import com.project.grabtitude.helper.ResourceNotFoundException;
 import com.project.grabtitude.repository.TopicRepo;
 import com.project.grabtitude.services.TopicService;
-import jakarta.persistence.Table;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,8 +27,10 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public List<Topic> getAll() {
-        return topicRepo.findAll();
+    public Page<Topic> getAll(int page, int size) {
+        Sort sort = Sort.by("name").ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return topicRepo.findAll(pageable);
     }
 
     @Override

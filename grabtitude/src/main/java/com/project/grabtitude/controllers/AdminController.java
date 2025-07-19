@@ -3,14 +3,14 @@ package com.project.grabtitude.controllers;
 import com.project.grabtitude.dto.ProblemRequestDto;
 import com.project.grabtitude.dto.ProblemResponseDto;
 import com.project.grabtitude.entity.Topic;
+import com.project.grabtitude.helper.AppConstants;
 import com.project.grabtitude.services.ProblemService;
 import com.project.grabtitude.services.TopicService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController()
 @RequestMapping("/admin")
@@ -40,8 +40,11 @@ public class AdminController {
     }
 
     @GetMapping("/topic/getAll")
-    public ResponseEntity<List<Topic>> getAllTopics(){
-        return new ResponseEntity<>(topicService.getAll(), HttpStatus.OK);
+    public ResponseEntity<Page<Topic>> getAllTopics(@RequestParam(value = "page", defaultValue = AppConstants.page) int page,
+                                                    @RequestParam(value = "size", defaultValue = AppConstants.size) int size) {
+        if(page < 0) page = Integer.parseInt(AppConstants.page);
+        if(size <= 0) size = Integer.parseInt(AppConstants.size);
+        return new ResponseEntity<>(topicService.getAll(page, size), HttpStatus.OK);
     }
 
     @PutMapping("/topic/update")
