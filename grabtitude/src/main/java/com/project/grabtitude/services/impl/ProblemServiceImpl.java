@@ -13,6 +13,10 @@ import com.project.grabtitude.repository.ProblemRepo;
 import com.project.grabtitude.repository.TopicRepo;
 import com.project.grabtitude.services.ProblemOptionService;
 import com.project.grabtitude.services.ProblemService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -95,12 +99,24 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public List<Problem> getProblems() {
-        return problemRepo.findAll();
+    public Page<ProblemResponseDto> getProblems(int page, int size) {
+        Sort sort = Sort.by("problemId").ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Problem> problems = problemRepo.findAll(pageable);
+
+        //now problem is we got the page of problem from repo but we need to return page of ProblemResponseDto
+        Page<ProblemResponseDto> problemResponseDtoPage = problems.map(problem -> {
+            ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
+            List<ProblemOptionDto> problemOptionDtos = problemOptionService.getOptionForProblem(problem);
+            problemResponseDto.setOptions(problemOptionDtos);
+            problemResponseDto.setTopicId(problem.getTopic().getId());
+            return problemResponseDto;
+        });
+        return problemResponseDtoPage;
     }
 
     @Override
-    public List<Problem> search(String keyword) {
+    public Page<ProblemResponseDto> search(String keyword, int page, int size) {
         return null;
     }
 }

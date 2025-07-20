@@ -2,11 +2,12 @@ package com.project.grabtitude.controllers;
 
 
 import com.project.grabtitude.dto.ProblemResponseDto;
+import com.project.grabtitude.helper.AppConstants;
 import com.project.grabtitude.services.ProblemService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/problems")
@@ -18,6 +19,12 @@ public class ProblemController {
     @GetMapping("/get/{id}")
     public ProblemResponseDto getProblem(@PathVariable Long id){
         return problemService.getById(id);
+    }
+
+    @GetMapping("/get-problems")
+    public ResponseEntity<Page<ProblemResponseDto>> getProblems(@RequestParam(value = "page", defaultValue = AppConstants.page) int page,
+                                                                @RequestParam(value = "size", defaultValue = AppConstants.size) int size){
+        return new ResponseEntity<>(problemService.getProblems(page, size), HttpStatus.OK);
     }
 
 }

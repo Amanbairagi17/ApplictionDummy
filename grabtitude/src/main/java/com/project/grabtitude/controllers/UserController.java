@@ -38,4 +38,5 @@ public class UserController {
     public String userHome(){
         return "user home page view";
     }
+
 }

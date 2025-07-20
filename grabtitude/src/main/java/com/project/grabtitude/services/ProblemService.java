@@ -3,9 +3,7 @@ package com.project.grabtitude.services;
 
 import com.project.grabtitude.dto.ProblemRequestDto;
 import com.project.grabtitude.dto.ProblemResponseDto;
-import com.project.grabtitude.entity.Problem;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface ProblemService {
     ProblemResponseDto createProblem(ProblemRequestDto problemRequestDto);
@@ -16,7 +14,7 @@ public interface ProblemService {
 
     ProblemResponseDto update(Long id, ProblemRequestDto problemRequestDto);
 
-    List<Problem> getProblems();
+    Page<ProblemResponseDto> getProblems(int page, int size);
 
-    List<Problem> search(String keyword);
+    Page<ProblemResponseDto> search(String keyword, int page, int size);
 }
