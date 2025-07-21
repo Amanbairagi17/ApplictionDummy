@@ -54,7 +54,7 @@ public class ProblemServiceImpl implements ProblemService {
         long topicId = problemRequestDto.getTopicId();
 
         Optional<Topic> topicOptional = topicRepo.findById(topicId);
-        if(topicOptional.isEmpty()) throw new ResourceNotFoundException("Topic not found");
+        if(topicOptional.isEmpty()) throw new ResourceNotFoundException("Topic not found with id : " + topicId);
         Topic topic = topicOptional.get();
 
         Problem problem = problemRequestDtoMapper.mapFrom(problemRequestDto);
@@ -76,14 +76,9 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public void deleteProblemById(Long id) {
-        problemRepo.deleteById(id);
-    }
-
-    @Override
     public ProblemResponseDto getById(Long id) {
         Optional<Problem> problemOptional = problemRepo.findById(id);
-        if(problemOptional.isEmpty()) throw new ResourceNotFoundException("Problem with problem id" + id + " not found");
+        if(problemOptional.isEmpty()) throw new ResourceNotFoundException("Problem not found with problem id : " + id);
         Problem problem = problemOptional.get();
         List<ProblemOptionDto> problemOptionDtos = problemOptionService.getOptionForProblem(problem);
 
@@ -91,11 +86,6 @@ public class ProblemServiceImpl implements ProblemService {
         problemResponseDto.setOptions(problemOptionDtos);
         problemResponseDto.setTopicId(problem.getTopic().getId());
         return problemResponseDto;
-    }
-
-    @Override
-    public ProblemResponseDto update(Long id, ProblemRequestDto problemRequestDto) {
-        return null;
     }
 
     @Override
@@ -119,4 +109,41 @@ public class ProblemServiceImpl implements ProblemService {
     public Page<ProblemResponseDto> search(String keyword, int page, int size) {
         return null;
     }
+
+    @Override
+    public ProblemResponseDto update(Long id, ProblemRequestDto problemRequestDto) {
+        return null;
+    }
+
+
+    @Override
+    public void deleteProblemById(Long id) {
+        Optional<Problem> problemOptional = problemRepo.findById(id);
+        if(problemOptional.isEmpty()) throw new ResourceNotFoundException("Problem not found with problem id : " + id);
+        Problem problem = problemOptional.get();
+        List<ProblemOption> optionForProblem = problemOptionService.getOptionsForDelete(problem);
+
+        for(ProblemOption problemOption : optionForProblem){
+            problemOptionRepo.delete(problemOption);
+        }
+        problemRepo.delete(problem);
+        return;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -24,7 +24,7 @@ public class AdminController {
         this.topicService = topicService;
     }
 
-    @PostMapping("/create-problem")
+    @PostMapping("/problem/create")
     public ProblemResponseDto createProblem(@RequestBody ProblemRequestDto problemRequestDto){
         return problemService.createProblem(problemRequestDto);
     }
@@ -39,7 +39,7 @@ public class AdminController {
         return new ResponseEntity<>(topicService.getById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/topic/getAll")
+    @GetMapping("/topic/get-all")
     public ResponseEntity<Page<Topic>> getAllTopics(@RequestParam(value = "page", defaultValue = AppConstants.page) int page,
                                                     @RequestParam(value = "size", defaultValue = AppConstants.size) int size) {
         if(page < 0) page = Integer.parseInt(AppConstants.page);
@@ -55,6 +55,12 @@ public class AdminController {
     @DeleteMapping("/topic/delete/{id}")
     public ResponseEntity<Topic> deleteTopic(@PathVariable Long id){
         topicService.deleteTopicById(id);
+        return new ResponseEntity(null, HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/problem/delete/{id}")
+    public ResponseEntity<ProblemResponseDto> deleteProblem(@PathVariable Long id){
+        problemService.deleteProblemById(id);
         return new ResponseEntity(null, HttpStatus.NO_CONTENT);
     }
 }

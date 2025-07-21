@@ -29,4 +29,9 @@ public class ProblemOptionServiceImpl implements ProblemOptionService {
         }
         return optionDtos;
     }
+
+    @Override
+    public List<ProblemOption> getOptionsForDelete(Problem problem) {
+        return problemOptionRepo.findAllByProblem(problem);
+    }
 }
