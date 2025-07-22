@@ -1,6 +1,7 @@
 package com.project.grabtitude.services.impl;
 
 import com.project.grabtitude.entity.Topic;
+import com.project.grabtitude.helper.CustomPageResponse;
 import com.project.grabtitude.helper.ResourceNotFoundException;
 import com.project.grabtitude.repository.TopicRepo;
 import com.project.grabtitude.services.TopicService;
@@ -27,10 +28,23 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public Page<Topic> getAll(int page, int size) {
+    public CustomPageResponse<Topic> getAll(int page, int size) {
         Sort sort = Sort.by("name").ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        return topicRepo.findAll(pageable);
+        Page<Topic> topicPage = topicRepo.findAll(pageable);
+
+        CustomPageResponse<Topic> responsePage = new CustomPageResponse<>();
+
+        responsePage.setContent(topicPage.getContent());
+        responsePage.setPageNumber(topicPage.getNumber());
+        responsePage.setPageSize(topicPage.getSize());
+        responsePage.setLast(topicPage.isLast());
+        responsePage.setFirst(topicPage.isFirst());
+        responsePage.setTotalPages(topicPage.getTotalPages());
+        responsePage.setTotalNumberOfElements(topicPage.getTotalElements());
+        responsePage.setNumberOfElements(topicPage.getNumberOfElements());
+
+        return responsePage;
     }
 
     @Override

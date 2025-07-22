@@ -3,6 +3,7 @@ package com.project.grabtitude.services;
 
 import com.project.grabtitude.dto.ProblemRequestDto;
 import com.project.grabtitude.dto.ProblemResponseDto;
+import com.project.grabtitude.helper.CustomPageResponse;
 import org.springframework.data.domain.Page;
 
 public interface ProblemService {
@@ -14,7 +15,7 @@ public interface ProblemService {
 
     ProblemResponseDto update(Long id, ProblemRequestDto problemRequestDto);
 
-    Page<ProblemResponseDto> getProblems(int page, int size);
+    CustomPageResponse<ProblemResponseDto> getProblems(int page, int size);
 
-    Page<ProblemResponseDto> search(String keyword, int page, int size);
+    CustomPageResponse<ProblemResponseDto> search(String keyword, int page, int size);
 }

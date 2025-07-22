@@ -6,6 +6,8 @@ import com.project.grabtitude.dto.ProblemResponseDto;
 import com.project.grabtitude.entity.Problem;
 import com.project.grabtitude.entity.ProblemOption;
 import com.project.grabtitude.entity.Topic;
+import com.project.grabtitude.helper.AppConstants;
+import com.project.grabtitude.helper.CustomPageResponse;
 import com.project.grabtitude.helper.ResourceNotFoundException;
 import com.project.grabtitude.mapper.Mapper;
 import com.project.grabtitude.repository.ProblemOptionRepo;
@@ -89,7 +91,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public Page<ProblemResponseDto> getProblems(int page, int size) {
+    public CustomPageResponse<ProblemResponseDto> getProblems(int page, int size) {
         Sort sort = Sort.by("problemId").ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Problem> problems = problemRepo.findAll(pageable);
@@ -102,11 +104,23 @@ public class ProblemServiceImpl implements ProblemService {
             problemResponseDto.setTopicId(problem.getTopic().getId());
             return problemResponseDto;
         });
-        return problemResponseDtoPage;
+
+        CustomPageResponse<ProblemResponseDto> responsePage = new CustomPageResponse<>();
+
+        responsePage.setContent(problemResponseDtoPage.getContent());
+        responsePage.setPageNumber(problemResponseDtoPage.getNumber());
+        responsePage.setPageSize(problemResponseDtoPage.getSize());
+        responsePage.setLast(problemResponseDtoPage.isLast());
+        responsePage.setFirst(problemResponseDtoPage.isFirst());
+        responsePage.setTotalPages(problemResponseDtoPage.getTotalPages());
+        responsePage.setTotalNumberOfElements(problemResponseDtoPage.getTotalElements());
+        responsePage.setNumberOfElements(problemResponseDtoPage.getNumberOfElements());
+
+        return responsePage;
     }
 
     @Override
-    public Page<ProblemResponseDto> search(String keyword, int page, int size) {
+    public CustomPageResponse<ProblemResponseDto> search(String keyword, int page, int size) {
         return null;
     }
 
@@ -127,7 +141,6 @@ public class ProblemServiceImpl implements ProblemService {
             problemOptionRepo.delete(problemOption);
         }
         problemRepo.delete(problem);
-        return;
     }
 }
 

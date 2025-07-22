@@ -4,6 +4,7 @@ import com.project.grabtitude.dto.ProblemRequestDto;
 import com.project.grabtitude.dto.ProblemResponseDto;
 import com.project.grabtitude.entity.Topic;
 import com.project.grabtitude.helper.AppConstants;
+import com.project.grabtitude.helper.CustomPageResponse;
 import com.project.grabtitude.services.ProblemService;
 import com.project.grabtitude.services.TopicService;
 import org.springframework.data.domain.Page;
@@ -25,8 +26,8 @@ public class AdminController {
     }
 
     @PostMapping("/problem/create")
-    public ProblemResponseDto createProblem(@RequestBody ProblemRequestDto problemRequestDto){
-        return problemService.createProblem(problemRequestDto);
+    public ResponseEntity<ProblemResponseDto> createProblem(@RequestBody ProblemRequestDto problemRequestDto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(problemService.createProblem(problemRequestDto));
     }
 
     @PostMapping("topic/create")
@@ -40,8 +41,8 @@ public class AdminController {
     }
 
     @GetMapping("/topic/get-all")
-    public ResponseEntity<Page<Topic>> getAllTopics(@RequestParam(value = "page", defaultValue = AppConstants.page) int page,
-                                                    @RequestParam(value = "size", defaultValue = AppConstants.size) int size) {
+    public ResponseEntity<CustomPageResponse<Topic>> getAllTopics(@RequestParam(value = "page", defaultValue = AppConstants.page) int page,
+                                                                  @RequestParam(value = "size", defaultValue = AppConstants.size) int size) {
         if(page < 0) page = Integer.parseInt(AppConstants.page);
         if(size <= 0) size = Integer.parseInt(AppConstants.size);
         return new ResponseEntity<>(topicService.getAll(page, size), HttpStatus.OK);
