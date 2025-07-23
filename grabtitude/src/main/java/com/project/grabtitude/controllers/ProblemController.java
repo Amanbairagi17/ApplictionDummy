@@ -22,9 +22,18 @@ public class ProblemController {
     }
 
     @GetMapping("/get-problems")
-    public ResponseEntity<CustomPageResponse<ProblemResponseDto>> getProblems(@RequestParam(value = "page", defaultValue = AppConstants.page) int page,
-                                                                              @RequestParam(value = "size", defaultValue = AppConstants.size) int size){
+    public ResponseEntity<CustomPageResponse<ProblemResponseDto>> getProblems(
+            @RequestParam(value = "page", defaultValue = AppConstants.page) int page,
+            @RequestParam(value = "size", defaultValue = AppConstants.size) int size){
         return new ResponseEntity<>(problemService.getProblems(page, size), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<CustomPageResponse<ProblemResponseDto>> searchProblem(
+            @RequestParam(value = "page", defaultValue = AppConstants.page) int page,
+            @RequestParam(value = "size", defaultValue = AppConstants.size) int size,
+            @RequestParam(value = "keyword", defaultValue = AppConstants.keyword) String keyword){
+        return new ResponseEntity(problemService.search(keyword, page, size), HttpStatus.OK);
     }
 
 }

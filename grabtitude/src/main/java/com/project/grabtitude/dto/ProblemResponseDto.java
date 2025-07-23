@@ -19,7 +19,7 @@ public class ProblemResponseDto {
 
     private String difficulty;
 
-    private long topicId;
+    private String topicName;
 
     private List<ProblemOptionDto> options;
 

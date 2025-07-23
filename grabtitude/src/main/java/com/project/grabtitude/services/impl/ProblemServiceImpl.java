@@ -73,7 +73,7 @@ public class ProblemServiceImpl implements ProblemService {
         }
 
         problemResponseDto.setOptions(savedProblemOptionDtos);
-        problemResponseDto.setTopicId(topicId);
+        problemResponseDto.setTopicName(topic.getName());
         return problemResponseDto;
     }
 
@@ -86,7 +86,7 @@ public class ProblemServiceImpl implements ProblemService {
 
         ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
         problemResponseDto.setOptions(problemOptionDtos);
-        problemResponseDto.setTopicId(problem.getTopic().getId());
+        problemResponseDto.setTopicName(problem.getTopic().getName());
         return problemResponseDto;
     }
 
@@ -101,7 +101,7 @@ public class ProblemServiceImpl implements ProblemService {
             ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
             List<ProblemOptionDto> problemOptionDtos = problemOptionService.getOptionForProblem(problem);
             problemResponseDto.setOptions(problemOptionDtos);
-            problemResponseDto.setTopicId(problem.getTopic().getId());
+            problemResponseDto.setTopicName(problem.getTopic().getName());
             return problemResponseDto;
         });
 
@@ -121,7 +121,63 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public CustomPageResponse<ProblemResponseDto> search(String keyword, int page, int size) {
-        return null;
+        int n = keyword.length();
+        if(n > 100) throw new ResourceNotFoundException("Keyword size cannot be greater than 100");
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Problem> problemPage = problemRepo.findByTitleContaining(keyword, pageable);
+        Page<ProblemResponseDto> problemResponseDtoPage = problemPage.map(problem -> {
+            ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
+            List<ProblemOptionDto> optionForProblem = problemOptionService.getOptionForProblem(problem);
+            problemResponseDto.setOptions(optionForProblem);
+            problemResponseDto.setTopicName(problem.getTopic().getName());
+            return problemResponseDto;
+        });
+
+        CustomPageResponse<ProblemResponseDto> responsePage = new CustomPageResponse<>();
+
+        responsePage.setContent(problemResponseDtoPage.getContent());
+        responsePage.setPageNumber(problemResponseDtoPage.getNumber());
+        responsePage.setPageSize(problemResponseDtoPage.getSize());
+        responsePage.setLast(problemResponseDtoPage.isLast());
+        responsePage.setFirst(problemResponseDtoPage.isFirst());
+        responsePage.setTotalPages(problemResponseDtoPage.getTotalPages());
+        responsePage.setTotalNumberOfElements(problemResponseDtoPage.getTotalElements());
+        responsePage.setNumberOfElements(problemResponseDtoPage.getNumberOfElements());
+
+        //if keyword is empty so it will get all so we not return at top and return here as we access 0th index
+        if(keyword.isEmpty()) return responsePage;
+
+        int ascii = (int)(keyword.charAt(0)-'0');
+        if(ascii >= 0 && ascii <= 9){
+            long searchId = 0L;
+            int digits = 5;
+            for(char ch : keyword.toCharArray()){
+                int curr = (int)(ch-'0');
+                if(curr >= 0 && curr <= 9) {
+                    searchId = searchId * 10L + curr;
+                    digits--;
+                }
+                if(digits == 0)break;
+            }
+            List<ProblemResponseDto> content = new ArrayList<>(problemResponseDtoPage.getContent());
+
+            Optional<Problem> problemOptional = problemRepo.findById(searchId);
+            if(problemOptional.isPresent()) {
+                Problem problem = problemOptional.get();
+                ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
+                List<ProblemOptionDto> problemOptionDtos = problemOptionService.getOptionForProblem(problem);
+
+                problemResponseDto.setOptions(problemOptionDtos);
+                problemResponseDto.setTopicName(problem.getTopic().getName());
+
+                content.add(0, problemResponseDto);
+                responsePage.setNumberOfElements(responsePage.getNumberOfElements()+1);
+                responsePage.setTotalNumberOfElements(responsePage.getTotalNumberOfElements()+1);
+                responsePage.setContent(content);
+            }
+        }
+        return responsePage;
     }
 
     @Override
