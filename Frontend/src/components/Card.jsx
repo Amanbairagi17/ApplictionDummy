@@ -6,7 +6,7 @@ const Card = () => {
         <nav>
           
             
- 
+
 
 
         </nav>
