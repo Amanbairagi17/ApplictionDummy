@@ -66,7 +66,7 @@ const Footer = () => {
 
       <div className="text-center text-gray-500 text-sm py-4">
         © {new Date().getFullYear()}{" "}
-        <span className="font-semibold text-white">Grabitute</span>. All rights
+        <span className="font-semibold text-white">Gravtitude</span>. All rights
         reserved.
       </div>
     </>
