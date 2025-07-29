@@ -1,6 +1,5 @@
 package com.project.grabtitude.dto;
 
-
 import lombok.*;
 
 @Getter
@@ -8,8 +7,8 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class ProblemOptionDto {
-    private boolean correct;
+public class ProblemOptionUpdateDto {
+    private Long id;
     private String content;
+    private boolean correct;
 }

@@ -1,6 +1,7 @@
 package com.project.grabtitude.dto;
 
 import lombok.*;
+
 import java.util.List;
 
 @Getter
@@ -9,7 +10,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ProblemRequestDto {
+public class ProblemUpdateDto {
+    private Long problemId;
+
     private String title;
 
     private String description;
@@ -18,5 +21,5 @@ public class ProblemRequestDto {
 
     private long topicId;
 
-    private List<ProblemOptionRequestDto> options;
+    private List<ProblemOptionUpdateDto> options;
 }

@@ -21,8 +21,7 @@ public class ProblemResponseDto {
 
     private String topicName;
 
-    private List<ProblemOptionDto> options;
+    private List<ProblemOptionResponseDto> options;
 
     private LocalDateTime createdAt;
-
 }

@@ -2,12 +2,12 @@ package com.project.grabtitude.controllers;
 
 import com.project.grabtitude.dto.ProblemRequestDto;
 import com.project.grabtitude.dto.ProblemResponseDto;
+import com.project.grabtitude.dto.ProblemUpdateDto;
 import com.project.grabtitude.entity.Topic;
 import com.project.grabtitude.helper.AppConstants;
 import com.project.grabtitude.helper.CustomPageResponse;
 import com.project.grabtitude.services.ProblemService;
 import com.project.grabtitude.services.TopicService;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +28,11 @@ public class AdminController {
     @PostMapping("/problem/create")
     public ResponseEntity<ProblemResponseDto> createProblem(@RequestBody ProblemRequestDto problemRequestDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(problemService.createProblem(problemRequestDto));
+    }
+
+    @PutMapping("/problem/update")
+    public ResponseEntity<ProblemResponseDto> updateProblem(@RequestBody ProblemUpdateDto problemUpdateDto){
+        return new ResponseEntity<>(problemService.update(problemUpdateDto), HttpStatus.OK);
     }
 
     @PostMapping("topic/create")

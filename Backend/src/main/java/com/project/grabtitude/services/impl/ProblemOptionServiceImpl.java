@@ -1,6 +1,6 @@
 package com.project.grabtitude.services.impl;
 
-import com.project.grabtitude.dto.ProblemOptionDto;
+import com.project.grabtitude.dto.ProblemOptionResponseDto;
 import com.project.grabtitude.entity.Problem;
 import com.project.grabtitude.entity.ProblemOption;
 import com.project.grabtitude.mapper.Mapper;
@@ -14,18 +14,18 @@ import java.util.List;
 @Service
 public class ProblemOptionServiceImpl implements ProblemOptionService {
     private final ProblemOptionRepo problemOptionRepo;
-    private final Mapper<ProblemOption, ProblemOptionDto> problemOptionDtoMapper;
-    public ProblemOptionServiceImpl(ProblemOptionRepo problemOptionRepo, Mapper<ProblemOption, ProblemOptionDto> problemOptionDtoMapper){
+    private final Mapper<ProblemOption, ProblemOptionResponseDto> problemOptionResponseMapper;
+    public ProblemOptionServiceImpl(ProblemOptionRepo problemOptionRepo, Mapper<ProblemOption, ProblemOptionResponseDto> problemOptionResponseMapper){
         this.problemOptionRepo = problemOptionRepo;
-        this.problemOptionDtoMapper = problemOptionDtoMapper;
+        this.problemOptionResponseMapper = problemOptionResponseMapper;
     }
     @Override
-    public List<ProblemOptionDto> getOptionForProblem(Problem problem) {
+    public List<ProblemOptionResponseDto> getOptionForProblem(Problem problem) {
         List<ProblemOption> options = problemOptionRepo.findAllByProblem(problem);
-        List<ProblemOptionDto> optionDtos = new ArrayList<>();
+        List<ProblemOptionResponseDto> optionDtos = new ArrayList<>();
 
         for(ProblemOption option : options){
-            optionDtos.add(problemOptionDtoMapper.mapTo(option));
+            optionDtos.add(problemOptionResponseMapper.mapTo(option));
         }
         return optionDtos;
     }

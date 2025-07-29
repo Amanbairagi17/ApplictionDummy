@@ -1,12 +1,9 @@
 package com.project.grabtitude.services.impl;
 
-import com.project.grabtitude.dto.ProblemOptionDto;
-import com.project.grabtitude.dto.ProblemRequestDto;
-import com.project.grabtitude.dto.ProblemResponseDto;
+import com.project.grabtitude.dto.*;
 import com.project.grabtitude.entity.Problem;
 import com.project.grabtitude.entity.ProblemOption;
 import com.project.grabtitude.entity.Topic;
-import com.project.grabtitude.helper.AppConstants;
 import com.project.grabtitude.helper.CustomPageResponse;
 import com.project.grabtitude.helper.ResourceNotFoundException;
 import com.project.grabtitude.mapper.Mapper;
@@ -28,21 +25,24 @@ import java.util.Optional;
 @Service
 public class ProblemServiceImpl implements ProblemService {
     private final ProblemRepo problemRepo;
-    private final Mapper<ProblemOption, ProblemOptionDto> problemOptionMapper;
+    private final Mapper<ProblemOption, ProblemOptionRequestDto> problemOptionRequestMapper;
+    private final Mapper<ProblemOption, ProblemOptionResponseDto> problemOptionResponseMapper;
     private final Mapper<Problem, ProblemResponseDto> problemResponseDtoMapper;
     private final Mapper<Problem, ProblemRequestDto> problemRequestDtoMapper;
     private final ProblemOptionRepo problemOptionRepo;
     private final TopicRepo topicRepo;
     private final ProblemOptionService problemOptionService;
     public ProblemServiceImpl(ProblemRepo problemRepo, ProblemOptionRepo problemOptionRepo,
-                              Mapper<ProblemOption, ProblemOptionDto> problemOptionMapper,
+                              Mapper<ProblemOption, ProblemOptionRequestDto> problemOptionRequestMapper,
+                              Mapper<ProblemOption, ProblemOptionResponseDto> problemOptionResponseMapper,
                               Mapper<Problem, ProblemResponseDto> problemResponseDtoMapper,
                               Mapper<Problem, ProblemRequestDto> problemRequestDtoMapper,
                               TopicRepo topicRepo, ProblemOptionService problemOptionService
     ){
         this.problemRepo = problemRepo;
         this.problemOptionRepo = problemOptionRepo;
-        this.problemOptionMapper = problemOptionMapper;
+        this.problemOptionRequestMapper = problemOptionRequestMapper;
+        this.problemOptionResponseMapper = problemOptionResponseMapper;
         this.problemRequestDtoMapper = problemRequestDtoMapper;
         this.problemResponseDtoMapper = problemResponseDtoMapper;
         this.topicRepo = topicRepo;
@@ -52,7 +52,7 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public ProblemResponseDto createProblem(ProblemRequestDto problemRequestDto) {
         System.out.println(problemRequestDto);
-        List<ProblemOptionDto> problemOptionDtos = problemRequestDto.getOptions();
+        List<ProblemOptionRequestDto> problemOptionDtos = problemRequestDto.getOptions();
         long topicId = problemRequestDto.getTopicId();
 
         Optional<Topic> topicOptional = topicRepo.findById(topicId);
@@ -64,12 +64,12 @@ public class ProblemServiceImpl implements ProblemService {
         Problem savedProblem = problemRepo.save(problem);
         ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(savedProblem);
 
-        List<ProblemOptionDto> savedProblemOptionDtos = new ArrayList<>();
-        for(ProblemOptionDto optionDto : problemOptionDtos){
-            ProblemOption option = problemOptionMapper.mapFrom(optionDto);
+        List<ProblemOptionResponseDto> savedProblemOptionDtos = new ArrayList<>();
+        for(ProblemOptionRequestDto optionDto : problemOptionDtos){
+            ProblemOption option = problemOptionRequestMapper.mapFrom(optionDto);
             option.setProblem(savedProblem);
             ProblemOption savedOption = problemOptionRepo.save(option);
-            savedProblemOptionDtos.add(problemOptionMapper.mapTo(savedOption));
+            savedProblemOptionDtos.add(problemOptionResponseMapper.mapTo(savedOption));
         }
 
         problemResponseDto.setOptions(savedProblemOptionDtos);
@@ -82,7 +82,7 @@ public class ProblemServiceImpl implements ProblemService {
         Optional<Problem> problemOptional = problemRepo.findById(id);
         if(problemOptional.isEmpty()) throw new ResourceNotFoundException("Problem not found with problem id : " + id);
         Problem problem = problemOptional.get();
-        List<ProblemOptionDto> problemOptionDtos = problemOptionService.getOptionForProblem(problem);
+        List<ProblemOptionResponseDto> problemOptionDtos = problemOptionService.getOptionForProblem(problem);
 
         ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
         problemResponseDto.setOptions(problemOptionDtos);
@@ -99,7 +99,7 @@ public class ProblemServiceImpl implements ProblemService {
         //now problem is we got the page of problem from repo but we need to return page of ProblemResponseDto
         Page<ProblemResponseDto> problemResponseDtoPage = problems.map(problem -> {
             ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
-            List<ProblemOptionDto> problemOptionDtos = problemOptionService.getOptionForProblem(problem);
+            List<ProblemOptionResponseDto> problemOptionDtos = problemOptionService.getOptionForProblem(problem);
             problemResponseDto.setOptions(problemOptionDtos);
             problemResponseDto.setTopicName(problem.getTopic().getName());
             return problemResponseDto;
@@ -128,7 +128,7 @@ public class ProblemServiceImpl implements ProblemService {
         Page<Problem> problemPage = problemRepo.findByTitleContaining(keyword, pageable);
         Page<ProblemResponseDto> problemResponseDtoPage = problemPage.map(problem -> {
             ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
-            List<ProblemOptionDto> optionForProblem = problemOptionService.getOptionForProblem(problem);
+            List<ProblemOptionResponseDto> optionForProblem = problemOptionService.getOptionForProblem(problem);
             problemResponseDto.setOptions(optionForProblem);
             problemResponseDto.setTopicName(problem.getTopic().getName());
             return problemResponseDto;
@@ -166,7 +166,7 @@ public class ProblemServiceImpl implements ProblemService {
             if(problemOptional.isPresent()) {
                 Problem problem = problemOptional.get();
                 ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
-                List<ProblemOptionDto> problemOptionDtos = problemOptionService.getOptionForProblem(problem);
+                List<ProblemOptionResponseDto> problemOptionDtos = problemOptionService.getOptionForProblem(problem);
 
                 problemResponseDto.setOptions(problemOptionDtos);
                 problemResponseDto.setTopicName(problem.getTopic().getName());
@@ -181,8 +181,45 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public ProblemResponseDto update(Long id, ProblemRequestDto problemRequestDto) {
-        return null;
+    public ProblemResponseDto update(ProblemUpdateDto problemUpdateDto) {
+        Optional<Problem> problemOptional = problemRepo.findById(problemUpdateDto.getProblemId());
+        if(problemOptional.isEmpty()) throw new ResourceNotFoundException("Problem with problem id " + problemUpdateDto.getProblemId() +
+                " does not exist, please enter a valid problem id or create one");
+
+        Optional<Topic> topicOptional = topicRepo.findById(problemUpdateDto.getTopicId());
+        if(topicOptional.isEmpty()) throw new ResourceNotFoundException("Topic with topic id " + problemUpdateDto.getTopicId() +
+                " does not exist, please enter a valid topic id or create one");
+
+        Problem problem = problemOptional.get();
+        Topic topic = topicOptional.get();
+
+        problem.setTitle(problemUpdateDto.getTitle());
+        String difficulty = problemUpdateDto.getDifficulty();
+        problem.setDescription(problemUpdateDto.getDescription());
+        problem.setTopic(topic);
+        List<ProblemOptionResponseDto> updatedOptions = new ArrayList<>();
+        if(difficulty.equals("EASY")) problem.setDifficulty(Problem.Difficulty.EASY);
+        else if(difficulty.equals("MEDIUM")) problem.setDifficulty(Problem.Difficulty.MEDIUM);
+        else if(difficulty.equals("HARD")) problem.setDifficulty(Problem.Difficulty.HARD);
+        else if(difficulty.equals("EXPERT")) problem.setDifficulty(Problem.Difficulty.EXPERT);
+        else throw new ResourceNotFoundException("Please enter a valid difficulty");
+        ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
+
+        //update options
+        for(ProblemOptionUpdateDto problemOptionUpdateDto : problemUpdateDto.getOptions()){
+            Optional<ProblemOption> optionOptional = problemOptionRepo.findById(problemOptionUpdateDto.getId());
+            if(optionOptional.isEmpty()) throw new ResourceNotFoundException("Problem option with id : " + problemOptionUpdateDto.getId() + " not found");
+            ProblemOption problemOption = optionOptional.get();
+            problemOption.setContent(problemOptionUpdateDto.getContent());
+            problemOption.setCorrect(problemOptionUpdateDto.isCorrect());
+            ProblemOption savedOption = problemOptionRepo.save(problemOption);
+
+            updatedOptions.add(problemOptionResponseMapper.mapTo(savedOption));
+        }
+        problemResponseDto.setTopicName(topic.getName());
+        problemResponseDto.setOptions(updatedOptions);
+        problemRepo.save(problem);
+        return problemResponseDto;
     }
 
 

@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserById(String id) {
         Optional<User> userOptional = userRepo.findById(id);
-        if(userOptional.isEmpty()) throw  new UsernameNotFoundException("user with email " + id + " not found");
+        if(userOptional.isEmpty()) throw  new UsernameNotFoundException("user with id " + id + " not found");
         return userResponseMapper.mapTo(userOptional.get());
     }
 
