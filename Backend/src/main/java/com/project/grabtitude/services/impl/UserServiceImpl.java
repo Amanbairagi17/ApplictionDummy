@@ -93,6 +93,7 @@ public class UserServiceImpl implements UserService {
         String email = authUtil.getEmailOfLoggedUser();
         Optional<User> userOptional = userRepo.findByEmail(email);
         if(userOptional.isEmpty()) throw new UsernameNotFoundException("Please login and logout again");
+        userRepo.delete(userOptional.get());
         return userResponseMapper.mapTo(userOptional.get());
     }
 
