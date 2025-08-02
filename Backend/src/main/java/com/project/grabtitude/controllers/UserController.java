@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user/")
-public class UserController {
+public class   UserController {
     private final UserService userServices;
     public UserController(UserService userServices){
         this.userServices = userServices;
@@ -25,7 +25,7 @@ public class UserController {
     @DeleteMapping("/delete")
     public ResponseEntity<UserResponseDto> deleteUser(){
         UserResponseDto user = userServices.deleteUser();
-        return new ResponseEntity<>(user, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
     }
 
     @PutMapping("/update")
