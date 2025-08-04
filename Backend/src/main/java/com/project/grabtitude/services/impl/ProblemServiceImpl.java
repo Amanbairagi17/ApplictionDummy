@@ -1,15 +1,13 @@
 package com.project.grabtitude.services.impl;
 
 import com.project.grabtitude.dto.*;
-import com.project.grabtitude.entity.Problem;
-import com.project.grabtitude.entity.ProblemOption;
-import com.project.grabtitude.entity.Topic;
+import com.project.grabtitude.entity.*;
+import com.project.grabtitude.helper.AuthUtil;
 import com.project.grabtitude.helper.CustomPageResponse;
 import com.project.grabtitude.helper.ResourceNotFoundException;
 import com.project.grabtitude.mapper.Mapper;
-import com.project.grabtitude.repository.ProblemOptionRepo;
-import com.project.grabtitude.repository.ProblemRepo;
-import com.project.grabtitude.repository.TopicRepo;
+import com.project.grabtitude.mapper.impl.SubmissionResponseMapper;
+import com.project.grabtitude.repository.*;
 import com.project.grabtitude.services.ProblemOptionService;
 import com.project.grabtitude.services.ProblemService;
 import org.springframework.data.domain.Page;
@@ -32,12 +30,18 @@ public class ProblemServiceImpl implements ProblemService {
     private final ProblemOptionRepo problemOptionRepo;
     private final TopicRepo topicRepo;
     private final ProblemOptionService problemOptionService;
+    private final AuthUtil authUtil;
+    private final UserRepo userRepo;
+    private final SubmissionRepo submissionRepo;
+    private final SubmissionResponseMapper submissionResponseMapper;
     public ProblemServiceImpl(ProblemRepo problemRepo, ProblemOptionRepo problemOptionRepo,
                               Mapper<ProblemOption, ProblemOptionRequestDto> problemOptionRequestMapper,
                               Mapper<ProblemOption, ProblemOptionResponseDto> problemOptionResponseMapper,
                               Mapper<Problem, ProblemResponseDto> problemResponseDtoMapper,
                               Mapper<Problem, ProblemRequestDto> problemRequestDtoMapper,
-                              TopicRepo topicRepo, ProblemOptionService problemOptionService
+                              TopicRepo topicRepo, ProblemOptionService problemOptionService,
+                              AuthUtil authUtil, UserRepo userRepo, SubmissionRepo submissionRepo,
+                              SubmissionResponseMapper submissionResponseMapper
     ){
         this.problemRepo = problemRepo;
         this.problemOptionRepo = problemOptionRepo;
@@ -47,6 +51,10 @@ public class ProblemServiceImpl implements ProblemService {
         this.problemResponseDtoMapper = problemResponseDtoMapper;
         this.topicRepo = topicRepo;
         this.problemOptionService = problemOptionService;
+        this.authUtil = authUtil;
+        this.userRepo = userRepo;
+        this.submissionRepo = submissionRepo;
+        this.submissionResponseMapper = submissionResponseMapper;
     }
 
     @Override
@@ -117,6 +125,36 @@ public class ProblemServiceImpl implements ProblemService {
         responsePage.setNumberOfElements(problemResponseDtoPage.getNumberOfElements());
 
         return responsePage;
+    }
+
+    @Override
+    public SubmissionResponseDto submit(SubmissionRequestDto submissionRequestDto) {
+        String email = authUtil.getEmailOfLoggedUser();
+        Optional<User> userOptional = userRepo.findByEmail(email);
+        if(userOptional.isEmpty()) throw new ResourceNotFoundException("Please login and logout again");
+
+        Optional<ProblemOption> problemOptionOptional = problemOptionRepo.findById(submissionRequestDto.getOptionId());
+        if(problemOptionOptional.isEmpty()) throw new ResourceNotFoundException("Please enter or select a valid option id");
+
+        Optional<Problem> problemOptional = problemRepo.findById(submissionRequestDto.getProblemId());
+        if(problemOptional.isEmpty()) throw new ResourceNotFoundException("No such problem exist which you are trying to submit");
+
+        if(problemOptionOptional.get().getProblem().getProblemId() != submissionRequestDto.getProblemId()){
+            throw new ResourceNotFoundException("Please enter correct problemId and optionId");
+        }
+
+        Submission submission = new Submission();
+        submission.setProblem(problemOptional.get());
+        submission.setUser(userOptional.get());
+        submission.setSelectedOption(problemOptionOptional.get());
+        submission.setCorrect(problemOptionOptional.get().isCorrect());
+
+        submissionRepo.save(submission);
+
+        SubmissionResponseDto submissionResponseDto = submissionResponseMapper.mapTo(submission);
+        submissionResponseDto.setSubmissionId(submission.getId());
+        submissionResponseDto.setProblemId(submission.getProblem().getProblemId());
+        return submissionResponseDto;
     }
 
     @Override

@@ -1,7 +1,10 @@
 package com.project.grabtitude.controllers;
 
+import com.project.grabtitude.dto.SubmissionRequestDto;
+import com.project.grabtitude.dto.SubmissionResponseDto;
 import com.project.grabtitude.dto.UserRegistrationDto;
 import com.project.grabtitude.dto.UserResponseDto;
+import com.project.grabtitude.services.ProblemService;
 import com.project.grabtitude.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user/")
 public class   UserController {
     private final UserService userServices;
-    public UserController(UserService userServices){
+
+    private final ProblemService problemService;
+    public UserController(UserService userServices, ProblemService problemService){
         this.userServices = userServices;
+        this.problemService = problemService;
     }
 
     @GetMapping("/{id}")
@@ -32,6 +38,12 @@ public class   UserController {
     public ResponseEntity<UserResponseDto> updateUser(@RequestBody UserRegistrationDto userRegistrationDto){
         UserResponseDto user = userServices.updateUser(userRegistrationDto);
         return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
+    }
+
+    @PostMapping("/submit")
+    public ResponseEntity<SubmissionResponseDto> submitOption(@RequestBody SubmissionRequestDto submissionRequestDto){
+        SubmissionResponseDto submissionResponseDto = problemService.submit(submissionRequestDto);
+        return new ResponseEntity<>(submissionResponseDto, HttpStatus.OK);
     }
 
     @GetMapping("/")
