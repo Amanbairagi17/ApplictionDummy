@@ -6,6 +6,7 @@ import com.project.grabtitude.dto.UserRegistrationDto;
 import com.project.grabtitude.dto.UserResponseDto;
 import com.project.grabtitude.services.ProblemService;
 import com.project.grabtitude.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class   UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<UserResponseDto> updateUser(@RequestBody UserRegistrationDto userRegistrationDto){
+    public ResponseEntity<UserResponseDto> updateUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto){
         UserResponseDto user = userServices.updateUser(userRegistrationDto);
         return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
     }

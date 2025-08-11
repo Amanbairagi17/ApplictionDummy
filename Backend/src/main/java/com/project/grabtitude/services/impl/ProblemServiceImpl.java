@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +148,7 @@ public class ProblemServiceImpl implements ProblemService {
         submission.setProblem(problemOptional.get());
         submission.setUser(userOptional.get());
         submission.setSelectedOption(problemOptionOptional.get());
-        submission.setCorrect(problemOptionOptional.get().isCorrect());
+        submission.setCorrect(problemOptionOptional.get().getCorrect());
 
         submissionRepo.save(submission);
 
@@ -219,6 +220,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
+    @Transactional
     public ProblemResponseDto update(ProblemUpdateDto problemUpdateDto) {
         Optional<Problem> problemOptional = problemRepo.findById(problemUpdateDto.getProblemId());
         if(problemOptional.isEmpty()) throw new ResourceNotFoundException("Problem with problem id " + problemUpdateDto.getProblemId() +
@@ -236,11 +238,13 @@ public class ProblemServiceImpl implements ProblemService {
         problem.setDescription(problemUpdateDto.getDescription());
         problem.setTopic(topic);
         List<ProblemOptionResponseDto> updatedOptions = new ArrayList<>();
+
         if(difficulty.equals("EASY")) problem.setDifficulty(Problem.Difficulty.EASY);
         else if(difficulty.equals("MEDIUM")) problem.setDifficulty(Problem.Difficulty.MEDIUM);
         else if(difficulty.equals("HARD")) problem.setDifficulty(Problem.Difficulty.HARD);
         else if(difficulty.equals("EXPERT")) problem.setDifficulty(Problem.Difficulty.EXPERT);
         else throw new ResourceNotFoundException("Please enter a valid difficulty");
+
         ProblemResponseDto problemResponseDto = problemResponseDtoMapper.mapTo(problem);
 
         //update options
@@ -248,8 +252,12 @@ public class ProblemServiceImpl implements ProblemService {
             Optional<ProblemOption> optionOptional = problemOptionRepo.findById(problemOptionUpdateDto.getId());
             if(optionOptional.isEmpty()) throw new ResourceNotFoundException("Problem option with id : " + problemOptionUpdateDto.getId() + " not found");
             ProblemOption problemOption = optionOptional.get();
+
+            if(problemOption.getProblem().getProblemId() != problem.getProblemId()){
+                throw new RuntimeException("The option id entered to update is not the option for given problem with problem id : " + problem.getProblemId());
+            }
             problemOption.setContent(problemOptionUpdateDto.getContent());
-            problemOption.setCorrect(problemOptionUpdateDto.isCorrect());
+            problemOption.setCorrect(problemOptionUpdateDto.getCorrect());
             ProblemOption savedOption = problemOptionRepo.save(problemOption);
 
             updatedOptions.add(problemOptionResponseMapper.mapTo(savedOption));

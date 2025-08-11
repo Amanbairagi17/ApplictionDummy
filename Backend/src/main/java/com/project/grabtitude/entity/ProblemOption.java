@@ -19,7 +19,7 @@ public class ProblemOption {
     private String content;
 
     //weather the option is correct or not
-    private boolean correct;
+    private Boolean correct;
 
     //joining by the problem id
     @ManyToOne(fetch = FetchType.LAZY)

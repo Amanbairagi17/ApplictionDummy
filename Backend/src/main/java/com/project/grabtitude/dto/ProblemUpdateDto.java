@@ -1,5 +1,9 @@
 package com.project.grabtitude.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.List;
@@ -11,15 +15,25 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class ProblemUpdateDto {
+    @NotNull(message = "Please enter problem id to be updated, id is returned when creating a problem")
     private Long problemId;
 
+    @Size(min = 1, max = 50, message = "Problem title size must be between 1 to 50 characters")
     private String title;
 
+    @Size(min = 10, message = "Problem must be descriptive should contain at least 10 characters")
     private String description;
 
+    @Pattern(
+            regexp = "^(EASY|MEDIUM|HARD|EXPERT)$",
+            message = "Difficulty must be one of: EASY, MEDIUM, HARD, EXPERT"
+    )
     private String difficulty;
 
+    @NotNull(message = "Please enter topic id for problem")
     private long topicId;
 
+    @Valid
+    @Size(min = 2, max = 10, message = "Please enter problem options, minimum 2 and maximum 10")
     private List<ProblemOptionUpdateDto> options;
 }
