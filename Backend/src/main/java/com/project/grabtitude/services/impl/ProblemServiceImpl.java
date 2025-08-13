@@ -131,24 +131,30 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public SubmissionResponseDto submit(SubmissionRequestDto submissionRequestDto) {
         String email = authUtil.getEmailOfLoggedUser();
-        Optional<User> userOptional = userRepo.findByEmail(email);
-        if(userOptional.isEmpty()) throw new ResourceNotFoundException("Please login and logout again");
 
-        Optional<ProblemOption> problemOptionOptional = problemOptionRepo.findById(submissionRequestDto.getOptionId());
-        if(problemOptionOptional.isEmpty()) throw new ResourceNotFoundException("Please enter or select a valid option id");
+//      Optional<User> userOptional = userRepo.findByEmail(email);
+//      if(userOptional.isEmpty()) throw new ResourceNotFoundException("Please login and logout again");
+//      to reduce this, the above one i.e. first getting optional then if it is empty throw error we can do it
+//      in one line using this, here if we get null we throw or if we get something we directly extract it
 
-        Optional<Problem> problemOptional = problemRepo.findById(submissionRequestDto.getProblemId());
-        if(problemOptional.isEmpty()) throw new ResourceNotFoundException("No such problem exist which you are trying to submit");
+        User user = userRepo.findByEmail(email)
+               .orElseThrow(() -> new ResourceNotFoundException("Please login and logout again"));
 
-        if(problemOptionOptional.get().getProblem().getProblemId() != submissionRequestDto.getProblemId()){
+        ProblemOption problemOption = problemOptionRepo.findById(submissionRequestDto.getOptionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Please enter or select a valid option id"));
+
+        Problem problem = problemRepo.findById(submissionRequestDto.getProblemId())
+                .orElseThrow(() -> new ResourceNotFoundException("No such problem exist which you are trying to submit"));
+
+        if(!problemOption.getProblem().getProblemId().equals(submissionRequestDto.getProblemId())){
             throw new ResourceNotFoundException("Please enter correct problemId and optionId");
         }
 
         Submission submission = new Submission();
-        submission.setProblem(problemOptional.get());
-        submission.setUser(userOptional.get());
-        submission.setSelectedOption(problemOptionOptional.get());
-        submission.setCorrect(problemOptionOptional.get().getCorrect());
+        submission.setProblem(problem);
+        submission.setUser(user);
+        submission.setSelectedOption(problemOption);
+        submission.setCorrect(problemOption.getCorrect());
 
         submissionRepo.save(submission);
 

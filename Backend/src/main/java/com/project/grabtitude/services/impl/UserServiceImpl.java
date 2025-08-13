@@ -37,41 +37,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto saveAdmin(UserRegistrationDto userRegistrationDto) {
-        User user = new User();
+        User user = userRegistrationMapper.mapFrom(userRegistrationDto);
         user.setUserId(UUID.randomUUID().toString());
-        user.setName(userRegistrationDto.getName());
-        user.setEmail(userRegistrationDto.getEmail());
         user.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
         user.setStreak(0);
         user.setRole(User.Role.ADMIN);
+        User savedUser = userRepo.save(user);
 
-        UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.setUserId(user.getUserId());
-        userResponseDto.setName(user.getName());
-        userResponseDto.setEmail(user.getEmail());
-        userResponseDto.setStreak(user.getStreak());
-
-        userRepo.save(user);
-        return userResponseDto;
+        return userResponseMapper.mapTo(savedUser);
     }
 
     @Override
     public UserResponseDto saveUser(UserRegistrationDto userRegistrationDto) {
-        User user = new User();
+        User user = userRegistrationMapper.mapFrom(userRegistrationDto);
         user.setUserId(UUID.randomUUID().toString());
-        user.setName(userRegistrationDto.getName());
-        user.setEmail(userRegistrationDto.getEmail());
         user.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
         user.setStreak(0);
 
-        UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.setUserId(user.getUserId());
-        userResponseDto.setName(user.getName());
-        userResponseDto.setEmail(user.getEmail());
-        userResponseDto.setStreak(user.getStreak());
+        User savedUser = userRepo.save(user);
 
-        userRepo.save(user);
-        return userResponseDto;
+        return userResponseMapper.mapTo(savedUser);
     }
 
     @Override
@@ -102,10 +87,12 @@ public class UserServiceImpl implements UserService {
         String email = authUtil.getEmailOfLoggedUser();
         if(!userRegistrationDto.getEmail().equals(email)) throw new AccessDeniedException("Please logout and login again");
 
-        Optional<User> userOptional = userRepo.findByEmail(email);
-        if(userOptional.isEmpty()) throw new UsernameNotFoundException("Please login and logout again");
-        User user = userOptional.get();
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Please login and logout again"));
+
         user.setName(userRegistrationDto.getName());
+        user.setAbout(userRegistrationDto.getAbout());
+
         userRepo.save(user);
         return userResponseMapper.mapTo(user);
     }

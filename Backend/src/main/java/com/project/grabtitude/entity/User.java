@@ -34,7 +34,15 @@ public class User implements UserDetails {
 
     private int streak = 0;
 
-    private int xp = 0;
+    private String institute;
+
+    private String country;
+
+    private String linkedIn;
+
+    private String github;
+
+    private String about;
 
     private LocalDate lastActiveDate;
 

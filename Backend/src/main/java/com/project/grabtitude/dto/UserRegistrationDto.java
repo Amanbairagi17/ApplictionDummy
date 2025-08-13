@@ -18,4 +18,19 @@ public class UserRegistrationDto {
 
     @Size(min = 8, max = 12, message = "Password length should be between 8 to 12")
     private String password;
+
+    @Size(max = 100, message = "Institute name can be maximum 100 characters")
+    private String institute;
+
+    @Size(max = 100, message = "Country name can be maximum 100 characters")
+    private String country;
+
+    @Size(max = 100, message = "Linkedin url can be maximum 100 characters")
+    private String linkedIn;
+
+    @Size(max = 100, message = "Github url can be maximum 100 characters")
+    private String github;
+
+    @Size(max = 1000, message = "About section can be maximum 1000 character")
+    private String about;
 }
