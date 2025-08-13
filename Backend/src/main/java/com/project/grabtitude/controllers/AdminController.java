@@ -1,11 +1,10 @@
 package com.project.grabtitude.controllers;
 
-import com.project.grabtitude.dto.ProblemRequestDto;
-import com.project.grabtitude.dto.ProblemResponseDto;
-import com.project.grabtitude.dto.ProblemUpdateDto;
+import com.project.grabtitude.dto.*;
 import com.project.grabtitude.entity.Topic;
 import com.project.grabtitude.helper.AppConstants;
 import com.project.grabtitude.helper.CustomPageResponse;
+import com.project.grabtitude.mapper.impl.TopicResponseMapper;
 import com.project.grabtitude.services.ProblemService;
 import com.project.grabtitude.services.TopicService;
 import jakarta.validation.Valid;
@@ -37,17 +36,17 @@ public class AdminController {
     }
 
     @PostMapping("topic/create")
-    public ResponseEntity<Topic> createTopic(@RequestBody Topic topic){
-        return new ResponseEntity<>(topicService.createTopic(topic), HttpStatus.CREATED);
+    public ResponseEntity<TopicResponseDto> createTopic(@Valid @RequestBody TopicRequestDto topicRequestDto){
+        return new ResponseEntity<>(topicService.createTopic(topicRequestDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/topic/get/{id}")
-    public ResponseEntity<Topic> getTopicById(@PathVariable Long id){
+    public ResponseEntity<TopicResponseDto> getTopicById(@PathVariable Long id){
         return new ResponseEntity<>(topicService.getById(id), HttpStatus.OK);
     }
 
     @GetMapping("/topic/get-all")
-    public ResponseEntity<CustomPageResponse<Topic>> getAllTopics(@RequestParam(value = "page", defaultValue = AppConstants.page) int page,
+    public ResponseEntity<CustomPageResponse<TopicResponseDto>> getAllTopics(@RequestParam(value = "page", defaultValue = AppConstants.page) int page,
                                                                   @RequestParam(value = "size", defaultValue = AppConstants.size) int size) {
         if(page < 0) page = Integer.parseInt(AppConstants.page);
         if(size <= 0) size = Integer.parseInt(AppConstants.size);
@@ -55,12 +54,12 @@ public class AdminController {
     }
 
     @PutMapping("/topic/update")
-    public ResponseEntity<Topic> updateTopic(@RequestBody Topic topic){
-        return new ResponseEntity<>(topicService.updateTopic(topic), HttpStatus.CREATED);
+    public ResponseEntity<TopicResponseDto> updateTopic(@Valid @RequestBody TopicUpdateDto topicUpdateDto){
+        return new ResponseEntity<>(topicService.updateTopic(topicUpdateDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/topic/delete/{id}")
-    public ResponseEntity<Topic> deleteTopic(@PathVariable Long id){
+    public ResponseEntity<TopicResponseDto> deleteTopic(@PathVariable Long id){
         topicService.deleteTopicById(id);
         return new ResponseEntity(null, HttpStatus.NO_CONTENT);
     }

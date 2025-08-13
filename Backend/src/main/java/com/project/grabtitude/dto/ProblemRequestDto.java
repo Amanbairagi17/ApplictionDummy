@@ -15,9 +15,11 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class ProblemRequestDto {
+    @NotNull(message = "Please enter title of topic")
     @Size(min = 1, max = 50, message = "Problem title size must be between 1 to 50 characters")
     private String title;
 
+    @NotNull(message = "Please enter description for problem")
     @Size(min = 10, message = "Problem must be descriptive should contain at least 10 characters")
     private String description;
 

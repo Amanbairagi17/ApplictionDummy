@@ -18,9 +18,11 @@ public class ProblemUpdateDto {
     @NotNull(message = "Please enter problem id to be updated, id is returned when creating a problem")
     private Long problemId;
 
+    @NotNull(message = "Please enter title for problem")
     @Size(min = 1, max = 50, message = "Problem title size must be between 1 to 50 characters")
     private String title;
 
+    @NotNull(message = "Please enter description for problem")
     @Size(min = 10, message = "Problem must be descriptive should contain at least 10 characters")
     private String description;
 
