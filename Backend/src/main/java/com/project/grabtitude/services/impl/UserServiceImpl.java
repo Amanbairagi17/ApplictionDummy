@@ -103,10 +103,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ProfileResponseDto getProfile() {
-        String email = authUtil.getEmailOfLoggedUser();
-
-        User user = userRepo.findByEmail(email)
+    public ProfileResponseDto getProfile(String id) {
+        User user = userRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Please login and logout again"));
 
         List<Submission> submissions = submissionRepo.findAllByUser(user);

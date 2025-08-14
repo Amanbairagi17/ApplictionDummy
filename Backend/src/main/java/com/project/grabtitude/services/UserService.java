@@ -17,5 +17,5 @@ public interface UserService {
 
     UserResponseDto saveAdmin(UserRegistrationDto userRegistrationDto);
 
-    ProfileResponseDto getProfile();
+    ProfileResponseDto getProfile(String id);
 }

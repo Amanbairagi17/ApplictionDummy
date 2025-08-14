@@ -48,9 +48,4 @@ public class   UserController {
     public String userHome(){
         return "user home page view";
     }
-
-    @GetMapping("/profile/{id}")
-    public ResponseEntity<ProfileResponseDto> getUserProfile(@PathVariable String id){
-        return ResponseEntity.ok().body(userServices.getProfile());
-    }
 }

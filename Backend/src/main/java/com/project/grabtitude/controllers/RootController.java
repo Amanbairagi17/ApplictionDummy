@@ -1,13 +1,21 @@
 package com.project.grabtitude.controllers;
 
+import com.project.grabtitude.dto.ProfileResponseDto;
+import com.project.grabtitude.services.UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
 @RestController
 public class RootController {
+    private final UserService userService;
+    public RootController(UserService userService){
+        this.userService = userService;
+    }
     @GetMapping("/")
     public void home(HttpServletResponse response) throws IOException {
         response.sendRedirect("/home");
@@ -15,5 +23,10 @@ public class RootController {
     @GetMapping("/home")
     public String homePage(){
         return "home page view";
+    }
+
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<ProfileResponseDto> getUserProfile(@PathVariable String id){
+        return ResponseEntity.ok().body(userService.getProfile(id));
     }
 }
