@@ -2,8 +2,11 @@ package com.project.grabtitude.services;
 
 
 import com.project.grabtitude.dto.*;
+import com.project.grabtitude.entity.User;
 import com.project.grabtitude.helper.CustomPageResponse;
-import org.springframework.data.domain.Page;
+import jakarta.persistence.criteria.CriteriaBuilder;
+
+import java.util.Map;
 
 public interface ProblemService {
     ProblemResponseDto createProblem(ProblemRequestDto problemRequestDto);
@@ -19,4 +22,8 @@ public interface ProblemService {
     CustomPageResponse<ProblemResponseDto> search(String keyword, int page, int size);
 
     SubmissionResponseDto submit(SubmissionRequestDto submissionRequestDto);
+
+    Map<String, Integer> getDifficultyStats(User user);
+
+    Map<String, Integer> getTopicStats(User user);
 }

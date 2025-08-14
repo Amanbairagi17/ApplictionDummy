@@ -1,5 +1,6 @@
 package com.project.grabtitude.services;
 
+import com.project.grabtitude.dto.ProfileResponseDto;
 import com.project.grabtitude.dto.UserRegistrationDto;
 import com.project.grabtitude.dto.UserResponseDto;
 
@@ -15,4 +16,6 @@ public interface UserService {
     UserResponseDto deleteUser();
 
     UserResponseDto saveAdmin(UserRegistrationDto userRegistrationDto);
+
+    ProfileResponseDto getProfile();
 }

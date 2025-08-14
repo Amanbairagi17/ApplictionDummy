@@ -1,9 +1,6 @@
 package com.project.grabtitude.controllers;
 
-import com.project.grabtitude.dto.SubmissionRequestDto;
-import com.project.grabtitude.dto.SubmissionResponseDto;
-import com.project.grabtitude.dto.UserRegistrationDto;
-import com.project.grabtitude.dto.UserResponseDto;
+import com.project.grabtitude.dto.*;
 import com.project.grabtitude.services.ProblemService;
 import com.project.grabtitude.services.UserService;
 import jakarta.validation.Valid;
@@ -52,4 +49,8 @@ public class   UserController {
         return "user home page view";
     }
 
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<ProfileResponseDto> getUserProfile(@PathVariable String id){
+        return ResponseEntity.ok().body(userServices.getProfile());
+    }
 }

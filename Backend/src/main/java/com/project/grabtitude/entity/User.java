@@ -23,7 +23,7 @@ public class User implements UserDetails {
     @Id
     private String userId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Column(unique = true, nullable = false)
@@ -42,6 +42,7 @@ public class User implements UserDetails {
 
     private String github;
 
+    @Column(length = 1000)
     private String about;
 
     private LocalDate lastActiveDate;

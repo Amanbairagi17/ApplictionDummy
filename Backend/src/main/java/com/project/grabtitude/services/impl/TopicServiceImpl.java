@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -46,6 +47,7 @@ public class TopicServiceImpl implements TopicService {
 
         CustomPageResponse<TopicResponseDto> responsePage = new CustomPageResponse<>();
 
+        responsePage.setContent(new ArrayList<>());
         topicPage.forEach(topic -> {
            responsePage.getContent().add(topicResponseMapper.mapTo(topic));
         });

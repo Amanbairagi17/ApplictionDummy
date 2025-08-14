@@ -10,6 +10,7 @@ import com.project.grabtitude.mapper.impl.SubmissionResponseMapper;
 import com.project.grabtitude.repository.*;
 import com.project.grabtitude.services.ProblemOptionService;
 import com.project.grabtitude.services.ProblemService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +18,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProblemServiceImpl implements ProblemService {
@@ -274,6 +274,47 @@ public class ProblemServiceImpl implements ProblemService {
         return problemResponseDto;
     }
 
+
+    @Override
+    public Map<String, Integer> getDifficultyStats(User user) {
+        List<Submission> submissions = submissionRepo.findAllByUser(user);
+
+        Map<String, Integer> difficultyMap = new HashMap<>();
+        Set<Long> seenProblems = new HashSet<>();
+
+        for (Submission submission : submissions) {
+            if (submission.isCorrect()) {
+                Long problemId = submission.getProblem().getProblemId();
+                if (!seenProblems.contains(problemId)) {
+                    seenProblems.add(problemId);
+                    String difficulty = submission.getProblem().getDifficulty().toString();
+                    difficultyMap.put(difficulty, difficultyMap.getOrDefault(difficulty, 0) + 1);
+                }
+            }
+        }
+        return difficultyMap;
+    }
+
+    @Override
+    public Map<String, Integer> getTopicStats(User user) {
+        List<Submission> submissions = submissionRepo.findAllByUser(user);
+
+        Map<String, Integer> topicMap = new HashMap<>();
+        Set<Long> seenProblems = new HashSet<>();
+
+        for (Submission submission : submissions) {
+            if (submission.isCorrect()) {
+                Long problemId = submission.getProblem().getProblemId();
+                if (!seenProblems.contains(problemId)) {
+                    seenProblems.add(problemId);
+                    String topic = submission.getProblem().getTopic().toString();
+                    topicMap.put(topic, topicMap.getOrDefault(topic, 0) + 1);
+                }
+            }
+        }
+
+        return topicMap;
+    }
 
     @Override
     public void deleteProblemById(Long id) {
