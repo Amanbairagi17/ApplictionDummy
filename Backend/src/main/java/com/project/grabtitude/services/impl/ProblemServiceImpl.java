@@ -10,7 +10,6 @@ import com.project.grabtitude.mapper.impl.SubmissionResponseMapper;
 import com.project.grabtitude.repository.*;
 import com.project.grabtitude.services.ProblemOptionService;
 import com.project.grabtitude.services.ProblemService;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,8 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ProblemServiceImpl implements ProblemService {
@@ -150,6 +149,8 @@ public class ProblemServiceImpl implements ProblemService {
             throw new ResourceNotFoundException("Please enter correct problemId and optionId");
         }
 
+        boolean isFirstForToday = updateStreak(user);
+
         Submission submission = new Submission();
         submission.setProblem(problem);
         submission.setUser(user);
@@ -162,6 +163,24 @@ public class ProblemServiceImpl implements ProblemService {
         submissionResponseDto.setSubmissionId(submission.getId());
         submissionResponseDto.setProblemId(submission.getProblem().getProblemId());
         return submissionResponseDto;
+    }
+
+    private boolean updateStreak(User user) {
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        if(user.getLastSubmittedAt() != null && user.getLastSubmittedAt().isEqual(yesterday)){
+            user.setStreak(user.getStreak()+1);
+            user.setMaxStreak(Math.max(user.getStreak(), user.getMaxStreak()));
+            user.setLastSubmittedAt(today);
+            return true;
+        }
+        else {
+            user.setLastSubmittedAt(today);
+            user.setStreak(1);
+            user.setMaxStreak(Math.max(user.getMaxStreak(), user.getStreak()));
+        }
+        userRepo.save(user);
+        return false;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.project.grabtitude.config;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -19,10 +20,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
+    private final OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler;
+    private final OAuthAuthenticationFailureHandler oAuthAuthenticationFailureHandler;
 
-    public SecurityConfig(UserDetailsService userDetailsService){
+    public SecurityConfig(UserDetailsService userDetailsService,
+                          OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler,
+                        OAuthAuthenticationFailureHandler oAuthAuthenticationFailureHandler){
         this.userDetailsService = userDetailsService;
+        this.oAuthAuthenticationSuccessHandler = oAuthAuthenticationSuccessHandler;
+        this.oAuthAuthenticationFailureHandler = oAuthAuthenticationFailureHandler;
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,6 +46,11 @@ public class SecurityConfig {
         httpSecurity.httpBasic(Customizer.withDefaults());
         httpSecurity.formLogin(Customizer.withDefaults());
 
+        httpSecurity.oauth2Login((oauth) -> {
+            oauth.successHandler(oAuthAuthenticationSuccessHandler);
+            oauth.failureHandler(oAuthAuthenticationFailureHandler);
+        });
+
         return httpSecurity.build();
     }
 
@@ -47,6 +59,11 @@ public class SecurityConfig {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
+    }
+
+    @Bean
+    public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
+        return CookieSameSiteSupplier.ofLax();
     }
 
     @Bean

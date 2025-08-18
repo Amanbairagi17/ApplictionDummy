@@ -34,6 +34,8 @@ public class User implements UserDetails {
 
     private int streak = 0;
 
+    private int maxStreak = 0;
+
     private String institute;
 
     private String country;
@@ -45,9 +47,12 @@ public class User implements UserDetails {
     @Column(length = 1000)
     private String about;
 
-    private LocalDate lastActiveDate;
+    private LocalDate lastSubmittedAt;
 
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider authProvider;
 
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;      //setting default role as USER
@@ -59,6 +64,10 @@ public class User implements UserDetails {
 
     public enum Role {
         ADMIN, USER
+    }
+
+    public enum AuthProvider{
+        LOCAL, GOOGLE
     }
 
     @Override
