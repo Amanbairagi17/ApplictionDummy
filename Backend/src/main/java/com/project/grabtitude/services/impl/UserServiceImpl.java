@@ -97,6 +97,10 @@ public class UserServiceImpl implements UserService {
 
         user.setName(userRegistrationDto.getName());
         user.setAbout(userRegistrationDto.getAbout());
+        user.setCountry(userRegistrationDto.getCountry());
+        user.setGithub(userRegistrationDto.getGithub());
+        user.setInstitute(userRegistrationDto.getInstitute());
+        user.setLinkedIn(userRegistrationDto.getLinkedIn());
 
         userRepo.save(user);
         return userResponseMapper.mapTo(user);
