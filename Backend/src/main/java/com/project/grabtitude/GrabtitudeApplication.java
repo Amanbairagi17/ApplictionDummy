@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @SpringBootApplication
 public class GrabtitudeApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(GrabtitudeApplication.class, args);
 	}
