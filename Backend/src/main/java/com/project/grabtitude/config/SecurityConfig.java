@@ -46,10 +46,10 @@ public class SecurityConfig {
         httpSecurity.httpBasic(Customizer.withDefaults());
         httpSecurity.formLogin(Customizer.withDefaults());
 
-        httpSecurity.oauth2Login((oauth) -> {
-            oauth.successHandler(oAuthAuthenticationSuccessHandler);
-            oauth.failureHandler(oAuthAuthenticationFailureHandler);
-        });
+//        httpSecurity.oauth2Login((oauth) -> {
+//            oauth.successHandler(oAuthAuthenticationSuccessHandler);
+//            oauth.failureHandler(oAuthAuthenticationFailureHandler);
+//        });
 
         return httpSecurity.build();
     }
@@ -59,11 +59,6 @@ public class SecurityConfig {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
-    }
-
-    @Bean
-    public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
-        return CookieSameSiteSupplier.ofLax();
     }
 
     @Bean

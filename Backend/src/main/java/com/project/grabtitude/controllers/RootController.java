@@ -1,8 +1,10 @@
 package com.project.grabtitude.controllers;
 
 import com.project.grabtitude.dto.ProfileResponseDto;
+import com.project.grabtitude.dto.UserResponseDto;
 import com.project.grabtitude.services.UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,5 +30,16 @@ public class RootController {
     @GetMapping("/profile/{id}")
     public ResponseEntity<ProfileResponseDto> getUserProfile(@PathVariable String id){
         return ResponseEntity.ok().body(userService.getProfile(id));
+    }
+
+    @GetMapping("/{email}")
+    public ResponseEntity<UserResponseDto> getUserByEmail(@PathVariable String email){
+        return ResponseEntity.ok().body(userService.getUserByEmail(email));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable String id){
+        UserResponseDto user = userService.getUserById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

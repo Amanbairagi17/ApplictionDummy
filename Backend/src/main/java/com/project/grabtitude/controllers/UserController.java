@@ -11,19 +11,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user/")
-public class   UserController {
+public class UserController {
     private final UserService userServices;
 
     private final ProblemService problemService;
     public UserController(UserService userServices, ProblemService problemService){
         this.userServices = userServices;
         this.problemService = problemService;
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> getUser(@PathVariable String id){
-        UserResponseDto user = userServices.getUserById(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")
