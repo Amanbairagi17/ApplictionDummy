@@ -32,12 +32,12 @@ public class RootController {
         return ResponseEntity.ok().body(userService.getProfile(id));
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/get-user/{email}")
     public ResponseEntity<UserResponseDto> getUserByEmail(@PathVariable String email){
         return ResponseEntity.ok().body(userService.getUserByEmail(email));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get-user-id/{id}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable String id){
         UserResponseDto user = userService.getUserById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);

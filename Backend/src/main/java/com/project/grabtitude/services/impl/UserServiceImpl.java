@@ -107,6 +107,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponseDto saveUser(User user) {
+        User savedUser = userRepo.save(user);
+        return userResponseMapper.mapTo(savedUser);
+    }
+
+    @Override
     public ProfileResponseDto getProfile(String id) {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Please login and logout again"));

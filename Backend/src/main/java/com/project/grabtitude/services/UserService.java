@@ -3,6 +3,7 @@ package com.project.grabtitude.services;
 import com.project.grabtitude.dto.ProfileResponseDto;
 import com.project.grabtitude.dto.UserRegistrationDto;
 import com.project.grabtitude.dto.UserResponseDto;
+import com.project.grabtitude.entity.User;
 
 public interface UserService {
     UserResponseDto saveUser(UserRegistrationDto userRegistrationDto);
@@ -18,4 +19,6 @@ public interface UserService {
     UserResponseDto saveAdmin(UserRegistrationDto userRegistrationDto);
 
     ProfileResponseDto getProfile(String id);
+
+    UserResponseDto saveUser(User user);
 }
