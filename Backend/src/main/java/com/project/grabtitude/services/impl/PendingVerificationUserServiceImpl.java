@@ -12,8 +12,8 @@ import com.project.grabtitude.services.EmailService;
 import com.project.grabtitude.services.PendingVerificationUserService;
 import com.project.grabtitude.services.UserService;
 import lombok.extern.java.Log;
-import org.springframework.cglib.core.Local;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,7 +26,7 @@ public class PendingVerificationUserServiceImpl implements PendingVerificationUs
 
     private final PendingVerificationUserRepo pendingVerificationUserRepo;
     private final UserRepo userRepo;
-
+    private final PasswordEncoder passwordEncoder;
     private final PendingVerificationUserResponseMapper pendingVerificationUserResponseMapper;
     private final UserService userService;
     private final PendingVerificationUserRequestMapper pendingVerificationUserRequestMapper;
@@ -35,13 +35,14 @@ public class PendingVerificationUserServiceImpl implements PendingVerificationUs
                                               PendingVerificationUserRequestMapper pendingVerificationUserRequestMapper,
                                               PendingVerificationUserResponseMapper pendingVerificationUserResponseMapper,
                                               UserService userService, EmailService emailService,
-                                              UserRepo userRepo){
+                                              UserRepo userRepo, PasswordEncoder passwordEncoder){
         this.pendingVerificationUserRepo = pendingVerificationUserRepo;
         this.pendingVerificationUserRequestMapper = pendingVerificationUserRequestMapper;
         this.pendingVerificationUserResponseMapper = pendingVerificationUserResponseMapper;
         this.userService = userService;
         this.userRepo = userRepo;
         this.emailService = emailService;
+        this.passwordEncoder = passwordEncoder;
     }
     @Override
     public PendingVerificationUserResponseDto saveUser(PendingVerificationUserRequestDto pendingVerificationUserRequestDto) {
@@ -63,6 +64,7 @@ public class PendingVerificationUserServiceImpl implements PendingVerificationUs
         LocalDate expiryDate = currentDate.plusDays(3);
         pendingVerificationUser.setVerificationToken(token);
         pendingVerificationUser.setExpiryDate(expiryDate);
+        pendingVerificationUser.setPassword(passwordEncoder.encode(pendingVerificationUser.getPassword()));
         PendingVerificationUser savedUser = pendingVerificationUserRepo.save(pendingVerificationUser);
         try {
             emailService.send(pendingVerificationUser.getEmail(), "Verification Email", "This the verification link for user on grabtitude please click to verify your email or if you are have received this by mistake please ignore this. http://localhost:8080/auth/verify-email?token=" + token);

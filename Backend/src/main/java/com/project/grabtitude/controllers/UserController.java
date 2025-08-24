@@ -1,6 +1,7 @@
 package com.project.grabtitude.controllers;
 
 import com.project.grabtitude.dto.*;
+import com.project.grabtitude.helper.AppConstants;
 import com.project.grabtitude.services.ProblemService;
 import com.project.grabtitude.services.UserService;
 import jakarta.validation.Valid;
@@ -36,6 +37,11 @@ public class UserController {
     public ResponseEntity<SubmissionResponseDto> submitOption(@RequestBody SubmissionRequestDto submissionRequestDto){
         SubmissionResponseDto submissionResponseDto = problemService.submit(submissionRequestDto);
         return new ResponseEntity<>(submissionResponseDto, HttpStatus.OK);
+    }
+
+    @PatchMapping("/reset-password")
+    public ResponseEntity<Boolean> resetPassword(@Valid @RequestBody ResetPasswordRequestDto resetPasswordRequestDto){
+        return ResponseEntity.ok().body(userServices.resetPassword(resetPasswordRequestDto));
     }
 
     @GetMapping("/")

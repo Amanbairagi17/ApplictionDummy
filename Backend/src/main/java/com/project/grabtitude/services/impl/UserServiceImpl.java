@@ -1,6 +1,7 @@
 package com.project.grabtitude.services.impl;
 
 import com.project.grabtitude.dto.ProfileResponseDto;
+import com.project.grabtitude.dto.ResetPasswordRequestDto;
 import com.project.grabtitude.dto.UserRegistrationDto;
 import com.project.grabtitude.dto.UserResponseDto;
 import com.project.grabtitude.entity.Submission;
@@ -104,6 +105,22 @@ public class UserServiceImpl implements UserService {
 
         userRepo.save(user);
         return userResponseMapper.mapTo(user);
+    }
+
+    @Override
+    public Boolean resetPassword(ResetPasswordRequestDto resetPasswordRequestDto) {
+        String email = authUtil.getEmailOfLoggedUser();
+        if(email.isEmpty() || email.isBlank()) throw new AccessDeniedException("Please login to continue");
+
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("No user found with the email : " + email));
+
+        if(!passwordEncoder.matches(resetPasswordRequestDto.getOldPassword(), user.getPassword())){
+            return false;
+        }
+        user.setPassword(passwordEncoder.encode(resetPasswordRequestDto.getNewPassword()));
+        userRepo.save(user);
+        return true;
     }
 
     @Override
