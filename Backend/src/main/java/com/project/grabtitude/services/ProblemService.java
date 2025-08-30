@@ -6,6 +6,7 @@ import com.project.grabtitude.entity.User;
 import com.project.grabtitude.helper.CustomPageResponse;
 import jakarta.persistence.criteria.CriteriaBuilder;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ProblemService {
@@ -26,4 +27,22 @@ public interface ProblemService {
     Map<String, Integer> getDifficultyStats(User user);
 
     Map<String, Integer> getTopicStats(User user);
+
+    // New methods for ProblemController
+    List<ProblemResponseDto> getAllProblems();
+    
+    ProblemResponseDto getProblemById(Long id);
+    
+    List<ProblemResponseDto> getProblemsByTopic(Long topicId);
+    
+    List<ProblemResponseDto> getProblemsByDifficulty(String difficulty);
+    
+    List<ProblemResponseDto> getAllProblemsForAdmin();
+    
+    void deleteProblem(Long id);
+
+    // Alias for the existing update method
+    default ProblemResponseDto updateProblem(ProblemUpdateDto problemUpdateDto) {
+        return update(problemUpdateDto);
+    }
 }

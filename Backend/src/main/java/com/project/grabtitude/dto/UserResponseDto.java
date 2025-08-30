@@ -17,4 +17,5 @@ public class UserResponseDto {
     private String github;
     private int streak;
     private String about;
+    private String role;
 }

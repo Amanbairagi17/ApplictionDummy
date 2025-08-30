@@ -15,6 +15,8 @@ public class ProblemResponseDto {
 
     private String title;
 
+    private String category;
+
     private String description;
 
     private String difficulty;

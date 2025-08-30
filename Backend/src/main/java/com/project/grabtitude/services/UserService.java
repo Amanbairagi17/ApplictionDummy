@@ -24,4 +24,6 @@ public interface UserService {
     UserResponseDto saveUser(User user);
 
     Boolean resetPassword(ResetPasswordRequestDto resetPasswordRequestDto);
+
+    UserResponseDto authenticateUser(String email, String password);
 }

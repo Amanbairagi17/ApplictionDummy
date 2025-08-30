@@ -52,6 +52,7 @@ public class OAuthAuthenticationSuccessHandler implements AuthenticationSuccessH
             user.setEmail(email);
             user.setPassword(password);
             user.setUserId(id);
+            user.setRole(User.Role.USER); // Set default role for OAuth users
             userRepo.save(user);
             Authentication newAuth = new UsernamePasswordAuthenticationToken(
                     user, null, user.getAuthorities()

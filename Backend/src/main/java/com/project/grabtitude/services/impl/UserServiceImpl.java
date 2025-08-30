@@ -59,6 +59,13 @@ public class UserServiceImpl implements UserService {
         user.setUserId(UUID.randomUUID().toString());
         user.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
         user.setStreak(0);
+        
+        // Set the role from the DTO
+        if ("ADMIN".equalsIgnoreCase(userRegistrationDto.getRole())) {
+            user.setRole(User.Role.ADMIN);
+        } else {
+            user.setRole(User.Role.USER);
+        }
 
         User savedUser = userRepo.save(user);
 
@@ -97,11 +104,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("Please login and logout again"));
 
         user.setName(userRegistrationDto.getName());
-        user.setAbout(userRegistrationDto.getAbout());
-        user.setCountry(userRegistrationDto.getCountry());
-        user.setGithub(userRegistrationDto.getGithub());
-        user.setInstitute(userRegistrationDto.getInstitute());
-        user.setLinkedIn(userRegistrationDto.getLinkedIn());
 
         userRepo.save(user);
         return userResponseMapper.mapTo(user);
@@ -127,6 +129,23 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto saveUser(User user) {
         User savedUser = userRepo.save(user);
         return userResponseMapper.mapTo(savedUser);
+    }
+
+    @Override
+    public UserResponseDto authenticateUser(String email, String password) {
+        Optional<User> userOptional = userRepo.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new UsernameNotFoundException("User with email " + email + " not found");
+        }
+        
+        User user = userOptional.get();
+        
+        // Check if password matches
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+        
+        return userResponseMapper.mapTo(user);
     }
 
     @Override

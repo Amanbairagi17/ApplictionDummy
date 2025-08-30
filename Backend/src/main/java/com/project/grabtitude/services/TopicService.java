@@ -14,6 +14,8 @@ public interface TopicService {
 
     CustomPageResponse<TopicResponseDto> getAll(int page, int size);
 
+    java.util.List<TopicResponseDto> getAll();
+
     TopicResponseDto updateTopic(TopicUpdateDto topicUpdateDto);
 
     void deleteTopicById(long id);

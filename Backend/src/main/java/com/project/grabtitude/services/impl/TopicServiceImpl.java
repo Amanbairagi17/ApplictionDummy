@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -61,6 +62,14 @@ public class TopicServiceImpl implements TopicService {
         responsePage.setNumberOfElements(topicPage.getNumberOfElements());
 
         return responsePage;
+    }
+
+    @Override
+    public List<TopicResponseDto> getAll() {
+        List<Topic> topics = topicRepo.findAll(Sort.by("name").ascending());
+        List<TopicResponseDto> result = new ArrayList<>();
+        topics.forEach(t -> result.add(topicResponseMapper.mapTo(t)));
+        return result;
     }
 
     @Override

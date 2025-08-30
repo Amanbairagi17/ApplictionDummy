@@ -1,36 +1,44 @@
 package com.project.grabtitude.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Getter
+@Setter
 public class UserRegistrationDto {
-    @Size(min = 2, max = 50, message = "Name length should be between 2 to 50 characters")
+    @NotNull(message = "Please enter your name")
+    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
     private String name;
 
+    @NotNull(message = "Please enter your email")
     @Email(message = "Please enter a valid email address")
     private String email;
 
-    @Size(min = 8, max = 12, message = "Password length should be between 8 to 12")
+    @NotNull(message = "Please enter your password")
+    @Size(min = 8, max = 12, message = "Password must be between 8 and 12 characters")
     private String password;
 
-    @Size(max = 100, message = "Institute name can be maximum 100 characters")
-    private String institute;
+    @NotNull(message = "Please select a role")
+    private String role; // "USER" or "ADMIN"
 
-    @Size(max = 100, message = "Country name can be maximum 100 characters")
-    private String country;
+    public String getName() {
+        return name;
+    }
 
-    @Size(max = 100, message = "Linkedin url can be maximum 100 characters")
-    private String linkedIn;
+    public String getEmail() {
+        return email;
+    }
 
-    @Size(max = 100, message = "Github url can be maximum 100 characters")
-    private String github;
+    public String getPassword() {
+        return password;
+    }
 
-    @Size(max = 1000, message = "About section can be maximum 1000 character")
-    private String about;
+    public String getRole() {
+        return role;
+    }
 }

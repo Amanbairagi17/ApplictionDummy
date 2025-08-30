@@ -83,6 +83,13 @@ public class PendingVerificationUserServiceImpl implements PendingVerificationUs
         user.setName(pendingVerificationUser.getName());
         user.setEmail(pendingVerificationUser.getEmail());
         user.setPassword(pendingVerificationUser.getPassword());
+        
+        // Set the role from the pending verification user
+        if ("ADMIN".equalsIgnoreCase(pendingVerificationUser.getRole())) {
+            user.setRole(User.Role.ADMIN);
+        } else {
+            user.setRole(User.Role.USER);
+        }
 
         userService.saveUser(user);
     }
@@ -100,7 +107,7 @@ public class PendingVerificationUserServiceImpl implements PendingVerificationUs
         String token = UUID.randomUUID().toString();
 
         existingUser.setName(pendingVerificationUserRequestDto.getName());
-        existingUser.setPassword(pendingVerificationUserRequestDto.getPassword());
+        existingUser.setPassword(passwordEncoder.encode(pendingVerificationUserRequestDto.getPassword()));
         existingUser.setExpiryDate(newExpiryDate);
         existingUser.setVerificationToken(token);
 

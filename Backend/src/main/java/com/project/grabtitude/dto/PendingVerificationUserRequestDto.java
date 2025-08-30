@@ -22,4 +22,7 @@ public class PendingVerificationUserRequestDto {
     @NotNull(message = "Please enter your email")
     @Email(message = "Please enter a valid email address")
     private String email;
+
+    @NotNull(message = "Please select a role")
+    private String role = "USER"; // Default to USER role
 }

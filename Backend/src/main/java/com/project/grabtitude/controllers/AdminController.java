@@ -30,11 +30,6 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(problemService.createProblem(problemRequestDto));
     }
 
-    @PutMapping("/problem/update")
-    public ResponseEntity<ProblemResponseDto> updateProblem(@Valid @RequestBody ProblemUpdateDto problemUpdateDto){
-        return new ResponseEntity<>(problemService.update(problemUpdateDto), HttpStatus.OK);
-    }
-
     @PostMapping("topic/create")
     public ResponseEntity<TopicResponseDto> createTopic(@Valid @RequestBody TopicRequestDto topicRequestDto){
         return new ResponseEntity<>(topicService.createTopic(topicRequestDto), HttpStatus.CREATED);

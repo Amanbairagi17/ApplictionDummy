@@ -1,20 +1,19 @@
 package com.project.grabtitude.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Getter
+@Setter
 public class UserLoginDto {
-    @NotNull(message = "Please enter username")
-    @Size(min = 2, max = 50, message = "Name length should be between 2 to 50 characters")
-    private String name;
+    @NotNull(message = "Please enter your email")
+    @Email(message = "Please enter a valid email address")
+    private String email;
 
-    @NotNull(message = "Please enter size")
-    @Size(min = 8, max = 12, message = "Password length should be between 8 to 12")
+    @NotNull(message = "Please enter your password")
     private String password;
 }

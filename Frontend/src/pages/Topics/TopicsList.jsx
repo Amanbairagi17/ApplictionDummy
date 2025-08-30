@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
-import API from "../../api/api";
+import API, { apiCall } from "../../api/api";
 
 const TopicsList = () => {
   const [topics, setTopics] = useState([]);
 
   useEffect(() => {
-    fetch(API.GET_ALL_TOPICS)
-      .then(res => res.json())
-      .then(data => setTopics(data))
-      .catch(err => console.error(err));
+    const load = async () => {
+      try {
+        const data = await apiCall(API.GET_ALL_TOPICS_ALL);
+        setTopics(data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    load();
   }, []);
 
   return (

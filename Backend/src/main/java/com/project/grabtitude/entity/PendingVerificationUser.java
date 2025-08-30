@@ -30,4 +30,7 @@ public class PendingVerificationUser {
     private String verificationToken;
 
     private LocalDate expiryDate;
+    
+    @Column(nullable = false)
+    private String role = "USER"; // Default to USER role, but can be set to ADMIN
 }
