@@ -15,7 +15,12 @@ public class UserResponseMapper implements Mapper<User, UserResponseDto> {
     }
     @Override
     public UserResponseDto mapTo(User user) {
-        return modelMapper.map(user, UserResponseDto.class);
+        UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
+        // Ensure role is properly converted from enum to string
+        if (user.getRole() != null) {
+            dto.setRole(user.getRole().toString());
+        }
+        return dto;
     }
 
     @Override

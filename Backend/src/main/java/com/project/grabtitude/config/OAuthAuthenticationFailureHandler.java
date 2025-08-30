@@ -13,6 +13,8 @@ import java.io.IOException;
 public class OAuthAuthenticationFailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        exception.printStackTrace();
+        // Redirect to frontend with error
+        String redirectUrl = "http://localhost:5173/signin?error=oauth_failed";
+        response.sendRedirect(redirectUrl);
     }
 }

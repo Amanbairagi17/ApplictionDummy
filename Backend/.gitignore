@@ -12,14 +12,14 @@ target/
 .settings
 .springBeans
 .sts4-cache
-.properties
-
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-*.properties
+
+# Allow specific OAuth properties file
+!src/main/resources/application-oauth.properties
 
 ### NetBeans ###
 /nbproject/private/

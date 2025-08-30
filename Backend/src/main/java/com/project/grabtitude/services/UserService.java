@@ -26,4 +26,8 @@ public interface UserService {
     Boolean resetPassword(ResetPasswordRequestDto resetPasswordRequestDto);
 
     UserResponseDto authenticateUser(String email, String password);
+    
+    User findOrCreateOAuth2User(String email, String name, String picture);
+    
+    User findByEmail(String email);
 }

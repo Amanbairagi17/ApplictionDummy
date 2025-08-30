@@ -38,6 +38,38 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    public boolean validateToken(String token) {
+        try {
+            Claims claims = parseClaims(token);
+            // Check if token is expired
+            Date expiration = claims.getExpiration();
+            return expiration.after(new Date());
+        } catch (Exception e) {
+            System.err.println("JWT validation failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public String getEmailFromToken(String token) {
+        try {
+            Claims claims = parseClaims(token);
+            return claims.getSubject();
+        } catch (Exception e) {
+            System.err.println("Failed to extract email from token: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public String getUserIdFromToken(String token) {
+        try {
+            Claims claims = parseClaims(token);
+            return (String) claims.get("userId");
+        } catch (Exception e) {
+            System.err.println("Failed to extract userId from token: " + e.getMessage());
+            return null;
+        }
+    }
 }
 
 

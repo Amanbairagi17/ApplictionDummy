@@ -26,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final Mapper<User, UserResponseDto> userResponseMapper;
     private final SubmissionRepo submissionRepo;
     private final BCryptPasswordEncoder passwordEncoder;
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final AuthUtil authUtil;
     public UserServiceImpl(UserRepo userRepo, Mapper<User, UserResponseDto> userResponseMapper,
@@ -134,18 +135,68 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto authenticateUser(String email, String password) {
         Optional<User> userOptional = userRepo.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            throw new UsernameNotFoundException("User with email " + email + " not found");
-        }
-        
+        if(userOptional.isEmpty()) throw new UsernameNotFoundException("user with email " + email + " not found");
         User user = userOptional.get();
-        
-        // Check if password matches
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid password");
-        }
-        
+        if(!passwordEncoder.matches(password, user.getPassword())) throw new AccessDeniedException("Wrong password");
         return userResponseMapper.mapTo(user);
+    }
+
+    @Override
+    public User findOrCreateOAuth2User(String email, String name, String picture) {
+        try {
+            logger.info("=== FIND OR CREATE OAUTH2 USER START ===");
+            logger.info("Email: {}, Name: {}, Picture: {}", email, name, picture != null ? "Present" : "None");
+            
+            Optional<User> userOptional = userRepo.findByEmail(email);
+            logger.info("User lookup result: {}", userOptional.isPresent() ? "Found existing user" : "New user needed");
+            
+            if (userOptional.isPresent()) {
+                // User exists, update picture if provided
+                User existingUser = userOptional.get();
+                logger.info("Existing user ID: {}, Role: {}", existingUser.getUserId(), existingUser.getRole());
+                
+                if (picture != null && !picture.isEmpty()) {
+                    existingUser.setPicture(picture);
+                    User savedUser = userRepo.save(existingUser);
+                    logger.info("Updated existing user with new picture");
+                    return savedUser;
+                }
+                logger.info("Returning existing user without changes");
+                return existingUser;
+            } else {
+                // Create new OAuth2 user
+                logger.info("Creating new OAuth2 user");
+                User newUser = new User();
+                String userId = UUID.randomUUID().toString();
+                newUser.setUserId(userId);
+                newUser.setEmail(email);
+                newUser.setName(name);
+                newUser.setPicture(picture);
+                newUser.setPassword(""); // OAuth2 users don't need password
+                newUser.setRole(User.Role.USER);
+                newUser.setAuthProvider(User.AuthProvider.GOOGLE);
+                newUser.setStreak(0);
+                newUser.setMaxStreak(0);
+                
+                logger.info("Saving new user with ID: {}", userId);
+                User savedUser = userRepo.save(newUser);
+                logger.info("=== NEW OAUTH2 USER CREATED SUCCESSFULLY ===");
+                logger.info("Saved user ID: {}, Email: {}, Role: {}", savedUser.getUserId(), savedUser.getEmail(), savedUser.getRole());
+                return savedUser;
+            }
+        } catch (Exception e) {
+            logger.error("=== ERROR IN FIND OR CREATE OAUTH2 USER ===");
+            logger.error("Exception type: {}", e.getClass().getSimpleName());
+            logger.error("Exception message: {}", e.getMessage());
+            logger.error("Full stack trace:", e);
+            throw e; // Re-throw to be caught by OAuth handler
+        }
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        Optional<User> userOptional = userRepo.findByEmail(email);
+        return userOptional.orElse(null);
     }
 
     @Override
