@@ -23,11 +23,17 @@ export const AuthProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       const userData = localStorage.getItem('userData');
+      const authToken = localStorage.getItem('authToken');
       
-      if (userData) {
+      if (userData && authToken) {
         const userObj = JSON.parse(userData);
+        console.log('Auth check - User data found:', userObj);
+        console.log('Auth check - Token found:', authToken ? 'Yes' : 'No');
         setUser(userObj);
         setIsAuthenticated(true);
+      } else {
+        console.log('Auth check - No user data or token found');
+        setIsAuthenticated(false);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -109,6 +115,12 @@ export const AuthProvider = ({ children }) => {
     return false;
   };
 
+  const setToken = (token) => {
+    if (token) {
+      localStorage.setItem('authToken', token);
+    }
+  };
+
   const value = {
     user,
     isAuthenticated,
@@ -118,6 +130,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUser,
     isAdmin,
+    setUser,
+    setToken,
   };
 
   return (

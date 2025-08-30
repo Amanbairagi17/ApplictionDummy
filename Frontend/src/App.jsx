@@ -14,6 +14,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
 import Practice from "./pages/Practice";
+import AuthCallback from "./pages/AuthCallback";
 
 // User
 import UserProfile from "./pages/User/UserProfile";
@@ -62,6 +63,7 @@ const App = () => {
           {/* Authentication */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
 
           {/* Practice Page */}
           <Route path="/practice" element={<Practice />} />
@@ -161,7 +163,6 @@ const App = () => {
 
           {/* Profile Pages */}
           <Route path="/profile/:id" element={<UserProfile />} />
-          <Route path="/dashboard/:id" element={<UserDashboard />} />
 
           {/* Test Pages */}
           <Route path="/test-heatmap" element={<TestHeatmap />} />
