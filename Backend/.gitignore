@@ -21,6 +21,9 @@ target/
 # Allow specific OAuth properties file
 !src/main/resources/application-oauth.properties
 
+Backend/add-otp-sent-default.sql
+
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
